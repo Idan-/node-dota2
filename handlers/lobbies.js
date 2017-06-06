@@ -30,23 +30,23 @@ Dota2._lobbyOptions = {
 
 /**
  * @typedef {Object} module:Dota2.Dota2Client#Lobby.Options
- * 
+ *
  * @property {string} game_name - Name of the lobby
- * 
+ *
  * @property {string} pass_key - Lobby password
- * 
+ *
  * @property {module:Dota2.ServerRegion} [server_region=module:Dota2.ServerRegion.UNSPECIFIED] - Server region where the lobby will be created
- * 
+ *
  * @property {DOTA_GameMode} [game_mode=DOTA_GameMode.DOTA_GAMEMODE_AP] - Game mode
- * 
+ *
  * @property {DOTAGameVersion} [game_version=DOTAGameVersion.GAME_VERSION_STABLE] - Version of the game
- * 
+ *
  * @property {DOTA_CM_PICK} [cm_pick=DOTA_CM_PICK.DOTA_CM_RANDOM] - Who gets first pick
- * 
+ *
  * @property {boolean} [allow_cheats=false] - Whether or not to allow cheats
- * 
+ *
  * @property {boolean} [fill_with_bots=false] - Whether or not to fill empty slots with bots
- * 
+ *
  * @property {BotDifficulty} [bot_difficulty_radiant=module:Dota2.BotDifficulty.PASSIVE] - The bot difficulty for radiant bots, if fill_with_bots is true.
  *
  * @property {BotDifficulty} [bot_difficulty_dire=module:Dota2.BotDifficulty.PASSIVE] - The bot difficulty for dire bots, if fill_with_bots is true.
@@ -56,7 +56,7 @@ Dota2._lobbyOptions = {
  * @property {number} [bot_dire] - Presumably the ID of the custom AI to be applied to dire bots.
  *
  * @property {boolean} [allow_spectating=true] - Whether or not to allow spectating
- * 
+ *
  * @property {SeriesType} [series_type=NONE] - Whether or not the game is part of a series (Bo3, Bo5).
  *
  * @property {number} [radiant_series_wins=0] - # of games won so far, e.g. for a Bo3 or Bo5.
@@ -67,23 +67,23 @@ Dota2._lobbyOptions = {
  * to find it automatically based on the teams and the players.
  *
  * @property {boolean} [allchat=false] - Whether or not it's allowed to all-chat
- * 
+ *
  * @property {LobbyDotaTVDelay} [dota_tv_delay=LobbyDotaTV_120] - How much time the game should be delayed for DotaTV.
  *
  * @property {number} [leagueid] - The league this lobby is being created for. The bot should be a league admin for this to work.
  *
  * @property {string} [custom_game_mode] - Name of the custom game
- * 
+ *
  * @property {string} [custom_map_name] - Which map the custom game should be played on
- * 
+ *
  * @property {number} [custom_difficulty] - Difficulty of the custom game
- * 
+ *
  * @property {external:Long} [custom_game_id] - 64bit ID of the custom game mode
  */
 
 // Methods
 /**
- * Sends a message to the Game Coordinator requesting to create a lobby. 
+ * Sends a message to the Game Coordinator requesting to create a lobby.
  * This will automatically make the bot join the first slot on radiant team. Listen for
  * {@link module:Dota2.Dota2Client#event:practiceLobbyUpdate|practiceLobbyUpdate} response for a
  * snapshot-update of the newly created lobby.
@@ -92,7 +92,7 @@ Dota2._lobbyOptions = {
  * @alias module:Dota2.Dota2Client#createPracticeLobby
  *
  * @param {module:Dota2.Dota2Client#Lobby.Options} options - Configuration options for the lobby
- * 
+ *
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgPracticeLobbyJoinResponse`
  */
 Dota2.Dota2Client.prototype.createPracticeLobby = function(options, callback) {
@@ -131,6 +131,8 @@ Dota2.Dota2Client.prototype.createPracticeLobby = function(options, callback) {
         "lobby_details": lobby_details,
         "pass_key": finalOptions.pass_key
     };
+
+    this.Logger.info("in createPracticeLobby before sendToGC with the payload, " payload)
 
     this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyCreate,
                     Dota2.schema.lookupType("CMsgPracticeLobbyCreate").encode(payload).finish(),
@@ -171,14 +173,14 @@ Dota2.Dota2Client.prototype.createTournamentLobby = function(password, tournamen
         payload["tournament_id"] = tournament_id;
     }
 
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyCreate, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbyCreate").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyCreate,
+                    Dota2.schema.lookupType("CMsgPracticeLobbyCreate").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
- * Sends a message to the Game Coordinator requesting to configure some options of the active lobby. 
- * Listen for {@link module:Dota2.Dota2Client#event:practiceLobbyUpdate|practiceLobbyUpdate} response 
+ * Sends a message to the Game Coordinator requesting to configure some options of the active lobby.
+ * Listen for {@link module:Dota2.Dota2Client#event:practiceLobbyUpdate|practiceLobbyUpdate} response
  * for a snapshot-update of the newly created lobby.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#configPracticeLobby
@@ -194,13 +196,13 @@ Dota2.Dota2Client.prototype.configPracticeLobby = function(lobby_id, options, ca
     payload["lobby_id"] = lobby_id;
 
     this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbySetDetails,
-                    Dota2.schema.lookupType("CMsgPracticeLobbySetDetails").encode(payload).finish(), 
+                    Dota2.schema.lookupType("CMsgPracticeLobbySetDetails").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Requests a lists of joinable practice lobbies.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyListData|practiceLobbyListData} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyListData|practiceLobbyListData} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#requestPracticeLobbyList
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgPracticeLobbyListResponse`
@@ -210,16 +212,16 @@ Dota2.Dota2Client.prototype.requestPracticeLobbyList = function(callback) {
     var _self = this;
 
     this.Logger.debug("Sending CMsgPracticeLobbyList request");
-    
+
     var payload = {};
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyList, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbyList").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyList,
+                    Dota2.schema.lookupType("CMsgPracticeLobbyList").encode(payload).finish(),
                     onPracticeLobbyListResponse, callback);
 };
 
 /**
  * Requests a lists of joinable practice lobbies which have one of your friends in them.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:friendPracticeLobbyListData|friendPracticeLobbyListData} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:friendPracticeLobbyListData|friendPracticeLobbyListData} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#requestFriendPracticeLobbyList
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgFriendPracticeLobbyListResponse`
@@ -229,16 +231,16 @@ Dota2.Dota2Client.prototype.requestFriendPracticeLobbyList = function(callback) 
     var _self = this;
 
     this.Logger.debug("Sending CMsgFriendPracticeLobbyListRequest request");
-    
+
     var payload = {};
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCFriendPracticeLobbyListRequest, 
-                    Dota2.schema.lookupType("CMsgFriendPracticeLobbyListRequest").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCFriendPracticeLobbyListRequest,
+                    Dota2.schema.lookupType("CMsgFriendPracticeLobbyListRequest").encode(payload).finish(),
                     onFriendPracticeLobbyListResponse, callback);
 };
 
 /**
  * Shuffles the lobby based on skill level. Requires you to be in a lobby and to be the host.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#balancedShuffleLobby
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgPracticeLobbyJoinResponse`
@@ -246,18 +248,18 @@ Dota2.Dota2Client.prototype.requestFriendPracticeLobbyList = function(callback) 
 Dota2.Dota2Client.prototype.balancedShuffleLobby = function(callback) {
     callback = callback || null;
     var _self = this;
-    
+
     this.Logger.debug("Sending CMsgBalancedShuffleLobby request");
-    
+
     var payload = {};
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCBalancedShuffleLobby, 
-                    Dota2.schema.lookupType("CMsgBalancedShuffleLobby").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCBalancedShuffleLobby,
+                    Dota2.schema.lookupType("CMsgBalancedShuffleLobby").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Flips the radiant and dire team players. Requires you to be in a lobby and to be the host.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#flipLobbyTeams
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgPracticeLobbyJoinResponse`
@@ -267,16 +269,16 @@ Dota2.Dota2Client.prototype.flipLobbyTeams = function(callback) {
     var _self = this;
 
     this.Logger.debug("Sending flip teams request");
-    
+
     var payload = {};
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCFlipLobbyTeams, 
-                    Dota2.schema.lookupType("CMsgFlipLobbyTeams").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCFlipLobbyTeams,
+                    Dota2.schema.lookupType("CMsgFlipLobbyTeams").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Asks to invite a player to your lobby. This creates a new default lobby when you are not already in one.
- * Listen for the {@link module:Dota2.Dota2Client#event:inviteCreated|inviteCreated} event for the GC's response. 
+ * Listen for the {@link module:Dota2.Dota2Client#event:inviteCreated|inviteCreated} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#inviteToLobby
  * @param {external:Long} steam_id - The Steam ID of the player you want to invite.
@@ -293,13 +295,13 @@ Dota2.Dota2Client.prototype.inviteToLobby = function(steam_id) {
     var payload = {
         "steam_id": steam_id
     };
-    this.sendToGC(  Dota2.schema.lookupEnum("EGCBaseMsg").values.k_EMsgGCInviteToLobby, 
+    this.sendToGC(  Dota2.schema.lookupEnum("EGCBaseMsg").values.k_EMsgGCInviteToLobby,
                     Dota2.schema.lookupType("CMsgInviteToLobby").encode(payload).finish());
 };
 
 /**
  * Asks to kick someone from your current practice lobby. Requires you to be in a lobby and to be the host.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#practiceLobbyKick
  * @param {number} account_id - The Dota2 account ID of the player you want to kick.
@@ -311,19 +313,19 @@ Dota2.Dota2Client.prototype.practiceLobbyKick = function(account_id, callback) {
     var _self = this;
 
     this.Logger.debug("Sending match CMsgPracticeLobbyKick request");
-    
+
     var payload = {
         "account_id": account_id
     };
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyKick, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbyKick").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyKick,
+                    Dota2.schema.lookupType("CMsgPracticeLobbyKick").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Asks to kick someone from his chosen team in your current practice lobby.
  * The player will be added to the player pool
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#practiceLobbyKickFromTeam
  * @param {number} account_id - The Dota2 account ID of the player you want to kick from his team.
@@ -335,18 +337,18 @@ Dota2.Dota2Client.prototype.practiceLobbyKickFromTeam = function(account_id, cal
     var _self = this;
 
     this.Logger.debug("Sending match CMsgPracticeLobbyKickFromTeam request");
-    
+
     var payload = {
         "account_id": account_id
     };
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyKickFromTeam, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbyKickFromTeam").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyKickFromTeam,
+                    Dota2.schema.lookupType("CMsgPracticeLobbyKickFromTeam").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Sends a message to the Game Coordinator requesting to join a lobby.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyJoinResponse|practiceLobbyJoinResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyJoinResponse|practiceLobbyJoinResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#joinPracticeLobby
  * @param {externalLong} id - The ID of the lobby
@@ -359,19 +361,19 @@ Dota2.Dota2Client.prototype.joinPracticeLobby = function(id, password, callback)
     var _self = this;
 
     this.Logger.debug("Sending match CMsgPracticeLobbyJoin request");
-    
+
     var payload = {
         "lobby_id": id,
         "pass_key": password
     };
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyJoin, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbyJoin").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyJoin,
+                    Dota2.schema.lookupType("CMsgPracticeLobbyJoin").encode(payload).finish(),
                     onPracticeLobbyJoinResponse, callback);
 };
 
 /**
  * Sends a message to the Game Coordinator requesting to leave the current lobby.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#leavePracticeLobby
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgPracticeLobbyJoinResponse`
@@ -382,16 +384,16 @@ Dota2.Dota2Client.prototype.leavePracticeLobby = function(callback) {
 
     /* Sends a message to the Game Coordinator requesting `matchId`'s match details.  Listen for `matchData` event for Game Coordinator's response. */
     this.Logger.debug("Sending match CMsgPracticeLobbyLeave request");
-    
+
     var payload = {};
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyLeave, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbyLeave").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyLeave,
+                    Dota2.schema.lookupType("CMsgPracticeLobbyLeave").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Abandons the current game.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#abandonCurrentGame
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgPracticeLobbyJoinResponse`
@@ -411,7 +413,7 @@ Dota2.Dota2Client.prototype.abandonCurrentGame = function(callback) {
 /**
  * Start the practice lobby. The bot will continue to receive lobby updates, but won't join the actual game.
  * Requires you to be in a lobby and to be the host.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#launchPracticeLobby
  * @param {module:Dota2~requestCallback} [callback] - Called with `err, CMsgPracticeLobbyJoinResponse`
@@ -423,15 +425,15 @@ Dota2.Dota2Client.prototype.launchPracticeLobby = function(callback) {
     this.Logger.debug("Sending match CMsgPracticeLobbyLaunch request");
 
     var payload = {};
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyLaunch, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbyLaunch").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyLaunch,
+                    Dota2.schema.lookupType("CMsgPracticeLobbyLaunch").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Sends a message to the Game Coordinator requesting to join a particular team in the lobby.
  * Requires you to be in a lobby.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#joinPracticeLobbyTeam
  * @param {number} slot - The slot you want to join
@@ -442,24 +444,24 @@ Dota2.Dota2Client.prototype.joinPracticeLobbyTeam = function(slot, team, callbac
     callback = callback || null;
     slot = slot ||1;
     if (typeof team === 'undefined') team = Dota2.schema.lookupEnum("DOTA_GC_TEAM").values.DOTA_GC_TEAM_PLAYER_POOL;
-    
+
     var _self = this;
 
     this.Logger.debug("Sending match CMsgPracticeLobbySetTeamSlot request");
-    
+
     var payload = {
         "team": team,
         "slot": slot
     };
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbySetTeamSlot, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbySetTeamSlot").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbySetTeamSlot,
+                    Dota2.schema.lookupType("CMsgPracticeLobbySetTeamSlot").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 };
 
 /**
  * Sends a message to the Game Coordinator requesting to add a bot to the broadcast channel.
  * Requires you to be in a lobby.
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#joinPracticeLobbyBroadcastChannel
  * @param {number} [channel=1] -  The channel slot you want to fill
@@ -483,7 +485,7 @@ Dota2.Dota2Client.prototype.joinPracticeLobbyBroadcastChannel = function(channel
 /**
  * Sends a message to the Game Coordinator requesting to add a bot to the given team in the lobby.
  * Requires you to be in a lobby and to be the host
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#addBotToPracticeLobby
  * @param {number} slot - The slot you want to add a bot to
@@ -499,20 +501,20 @@ Dota2.Dota2Client.prototype.addBotToPracticeLobby = function(slot, team, bot_dif
     var _self = this;
 
     this.Logger.debug("Sending match CMsgPracticeLobbySetTeamSlot request");
-    
+
     var payload = {
         "team": team,
         "slot": slot,
         "bot_difficulty": bot_difficulty
     };
-    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbySetTeamSlot, 
-                    Dota2.schema.lookupType("CMsgPracticeLobbySetTeamSlot").encode(payload).finish(), 
+    this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbySetTeamSlot,
+                    Dota2.schema.lookupType("CMsgPracticeLobbySetTeamSlot").encode(payload).finish(),
                     onPracticeLobbyResponse, callback);
 }
 
 /**
  * Sends a message to the Game Coordinator confirming/denying a lobby invitation
- * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response. 
+ * Provide a callback or listen for the {@link module:Dota2.Dota2Client#event:practiceLobbyResponse|practiceLobbyResponse} event for the GC's response.
  * Requires the GC to be {@link module:Dota2.Dota2Client#event:ready|ready}.
  * @alias module:Dota2.Dota2Client#respondLobbyInvite
  * @param {external:Long} id - The ID of the lobby
@@ -532,7 +534,7 @@ Dota2.Dota2Client.prototype.respondLobbyInvite = function(id, accept) {
         "lobby_id": id,
         "accept": accept
     };
-    this.sendToGC(  Dota2.schema.lookupEnum("EGCBaseMsg").values.k_EMsgGCLobbyInviteResponse, 
+    this.sendToGC(  Dota2.schema.lookupEnum("EGCBaseMsg").values.k_EMsgGCLobbyInviteResponse,
                     Dota2.schema.lookupType("CMsgLobbyInviteResponse").encode(payload).finish());
 };
 
@@ -550,7 +552,7 @@ Dota2.Dota2Client.prototype.respondLobbyInvite = function(id, accept) {
  * @param {Object} practiceLobbyListResponse - Raw response object
  * @param {boolean} practiceLobbyListResponse.tournament_games - Whether or not there are tournament games included in the list
  * @param {CMsgPracticeLobbyListResponseEntry[]} practiceLobbyListResponse.lobbies - List of practice lobbies and their details
- */ 
+ */
  /**
  * Emitted when an operation changing the state of a lobby was sent to the GC and
  * processed. This event only contains the acknowledgement by the GC. The actual
@@ -565,7 +567,7 @@ Dota2.Dota2Client.prototype.respondLobbyInvite = function(id, accept) {
  * @event module:Dota2.Dota2Client#friendPracticeLobbyListData
  * @param {Object} practiceLobbyListResponse - Raw response object
  * @param {CMsgPracticeLobbyListResponseEntry[]} practiceLobbyListResponse.lobbies - List of practice lobbies and their details
- */ 
+ */
  /**
  * Event that's emitted whenever the bot attempts to invite someone to a lobby
  * @event module:Dota2.Dota2Client#inviteCreated
@@ -583,7 +585,7 @@ var onPracticeLobbyJoinResponse = function onPracticeLobbyJoinResponse(message, 
 
     this.Logger.debug("Received practice lobby join response " + practiceLobbyJoinResponse.result);
     this.emit("practiceLobbyJoinResponse", practiceLobbyJoinResponse.result, practiceLobbyJoinResponse);
-    
+
     if (callback) {
         if (practiceLobbyJoinResponse.result === Dota2.schema.lookupEnum("DOTAJoinLobbyResult").values.DOTA_JOIN_RESULT_SUCCESS) {
             callback(null, practiceLobbyJoinResponse);
@@ -608,12 +610,12 @@ var onPracticeLobbyResponse = function onPracticeLobbyResponse(message, callback
 
     this.Logger.debug("Received create/flip/shuffle/kick/launch/leave response " + JSON.stringify(practiceLobbyResponse));
     this.emit("practiceLobbyResponse", practiceLobbyResponse.result, practiceLobbyResponse);
-    
+
     if (callback) {
         if (practiceLobbyResponse.result === 1) {
-            callback(null, practiceLobbyResponse); 
+            callback(null, practiceLobbyResponse);
         } else {
-            callback(practiceLobbyResponse.result, practiceLobbyResponse); 
+            callback(practiceLobbyResponse.result, practiceLobbyResponse);
         }
     }
 };
@@ -637,4 +639,3 @@ var onInviteCreated = function onInviteCreated(message) {
     this.emit("inviteCreated", inviteCreated.steam_id, inviteCreated.group_id, is_online);
 }
 handlers[Dota2.schema.lookupEnum("EGCBaseMsg").values.k_EMsgGCInvitationCreated] = onInviteCreated;
-
