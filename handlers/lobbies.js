@@ -132,7 +132,7 @@ Dota2.Dota2Client.prototype.createPracticeLobby = function(options, callback) {
         "pass_key": finalOptions.pass_key
     };
 
-    this.Logger.info("in createPracticeLobby before sendToGC with the payload, " payload)
+    this.Logger.info("in createPracticeLobby before sendToGC with the payload ", payload)
 
     this.sendToGC(  Dota2.schema.lookupEnum("EDOTAGCMsg").values.k_EMsgGCPracticeLobbyCreate,
                     Dota2.schema.lookupType("CMsgPracticeLobbyCreate").encode(payload).finish(),
